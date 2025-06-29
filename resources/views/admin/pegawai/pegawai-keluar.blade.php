@@ -9,7 +9,7 @@
 </div>
 <div class="card-body">
     <div class="table-responsive">
-        <table class="table table-striped table-hover">
+        <table id="dt" class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th>#</th>
@@ -44,11 +44,11 @@
                             <a href="{{ route('admin.pegawai.edit', $pegawai->id) }}" class="btn btn-sm btn-warning" title="Edit">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <button type="button" class="btn btn-sm btn-danger" title="Hapus"
+                            {{-- <button type="button" class="btn btn-sm btn-danger" title="Hapus"
                                     data-bs-toggle="modal" data-bs-target="#deleteModal" 
                                     data-id="{{ $pegawai->id }}" data-name="{{ $pegawai->nama }}">
                                 <i class="bi bi-trash3"></i>
-                            </button>
+                            </button> --}}
                         </div>
                     </td>
                 </tr>

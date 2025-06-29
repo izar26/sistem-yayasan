@@ -5,7 +5,7 @@
 @section('content')
 <div class="card-header d-flex justify-content-between align-items-center">
     <span>Table Nomor Surat</span>
-    <a href="{{ route('admin.nomor-surat.create') }}" class="btn btn-primary">
+    <a href="{{ route('admin.nomor-surat.create') }}" class="btn btn-primary mb-2">
         <i class="bi bi-plus-circle me-2"></i>Tambah
     </a>
 </div>

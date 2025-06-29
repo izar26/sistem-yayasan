@@ -6,32 +6,35 @@
 <div class="row">
     <!-- Kolom Kiri: Form Input Dinamis -->
     <div class="col-md-5">
-        {{-- Judul form yang akan berubah secara dinamis --}}
         <div class="card-header">
             <span id="form-title">Form Penugasan</span>
         </div>
         <div class="card-body">
-            {{-- Form utama dengan ID untuk dimanipulasi JS --}}
             <form id="penugasan-form" action="{{ route('admin.penugasan.store') }}" method="POST">
                 @csrf
-                {{-- Method spoofing untuk PUT akan disisipkan oleh JS di sini --}}
                 <div id="form-method"></div>
 
                 <div class="mb-3">
-                    <label for="id_tapel" class="form-label">Tahun Pelajaran</label>
+                    <label class="form-label">Tahun Pelajaran</label>
                     <input type="text" class="form-control" value="{{ $tapelAktif->tapel }} (Aktif)" disabled>
                     <input type="hidden" name="id_tapel" value="{{ $tapelAktif->id }}">
                 </div>
 
+                {{-- Nomor Surat Cerdas --}}
                 <div class="mb-3">
                     <label for="id_nomor_surat" class="form-label">Nomor Surat</label>
-                    <select class="form-select @error('id_nomor_surat') is-invalid @enderror" id="id_nomor_surat" name="id_nomor_surat" required>
-                        <option value="">Pilih Nomor Surat...</option>
-                        @foreach ($nomorSurats as $surat)
-                            <option value="{{ $surat->id }}">{{ $surat->no_surat }}</option>
-                        @endforeach
-                    </select>
-                    @error('id_nomor_surat')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    @if($nomorSuratDefault)
+                        <input type="text" class="form-control" value="{{ $nomorSuratDefault->no_surat }}" disabled>
+                        <input type="hidden" name="id_nomor_surat" value="{{ $nomorSuratDefault->id }}">
+                    @else
+                        <select class="form-select @error('id_nomor_surat') is-invalid @enderror" id="id_nomor_surat" name="id_nomor_surat" required>
+                            <option value="">Pilih Nomor Surat...</option>
+                            @foreach ($nomorSurats as $surat)
+                                <option value="{{ $surat->id }}">{{ $surat->no_surat }}</option>
+                            @endforeach
+                        </select>
+                        @error('id_nomor_surat')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    @endif
                 </div>
 
                 <div class="mb-3">
@@ -39,7 +42,8 @@
                     <select class="form-select @error('id_pegawai') is-invalid @enderror" id="id_pegawai" name="id_pegawai" required>
                         <option value="">Pilih Nama Pegawai...</option>
                         @foreach ($pegawais as $pegawai)
-                            <option value="{{ $pegawai->id }}">{{ $pegawai->nama }}</option>
+                            {{-- Tambahkan data-spk-id untuk dibaca oleh JS --}}
+                            <option value="{{ $pegawai->id }}" data-spk-id="{{ $pegawai->id_satuan_pendidikan }}">{{ $pegawai->nama }}</option>
                         @endforeach
                     </select>
                     @error('id_pegawai')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -58,7 +62,6 @@
 
                 <div class="d-flex gap-2">
                     <button type="submit" id="submit-button" class="btn btn-primary">Submit</button>
-                    {{-- Tombol Batal Edit, awalnya tersembunyi --}}
                     <button type="button" id="cancel-edit-button" class="btn btn-secondary" style="display: none;">Batal</button>
                 </div>
             </form>
@@ -72,7 +75,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table id="dt" class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -164,6 +167,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const formMethodDiv = document.getElementById('form-method');
 
     const defaultFormAction = "{{ route('admin.penugasan.store') }}";
+
+    const pegawaiSelect = document.getElementById('id_pegawai');
+    const spkSelect = document.getElementById('id_satuan_pendidikan');
+
+    pegawaiSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const spkId = selectedOption.dataset.spkId;
+
+        if (spkId) {
+            spkSelect.value = spkId;
+        }
+    });
     
     // Fungsi untuk mereset form ke mode "Tambah"
     function resetForm() {

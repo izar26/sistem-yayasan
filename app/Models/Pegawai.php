@@ -9,26 +9,27 @@ class Pegawai extends Model
 {
     use HasFactory;
 
-    /**
-     * Karena kolomnya sangat banyak, cara aman adalah menggunakan $guarded
-     * untuk mengizinkan semua field diisi kecuali 'id'.
-     */
     protected $guarded = ['id'];
 
-    /**
-     * === PERBAIKAN UTAMA ADA DI SINI ===
-     * Memberitahu Laravel untuk secara otomatis mengubah kolom ini 
-     * menjadi objek Tanggal (Carbon) setiap kali data diambil.
-     */
     protected $casts = [
         'tgl_lahir' => 'date',
     ];
+    protected $table = 'pegawais';
 
-    /**
-     * Mendefinisikan relasi ke model Penugasan.
-     */
     public function penugasans()
     {
         return $this->hasMany(Penugasan::class, 'id_pegawai');
     }
+
+    public function satuanPendidikan()
+    {
+        return $this->belongsTo(SatuanPendidikan::class, 'id_satuan_pendidikan');
+    }
+   public function keluar()
+{
+    return $this->hasOne(\App\Models\PegawaiKeluar::class, 'pegawai_id');
+}
+
+
+
 }

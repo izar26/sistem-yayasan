@@ -17,24 +17,46 @@ class PenugasanController extends Controller
      */
     public function index()
     {
+        // 1. Cari Tahun Pelajaran yang aktif
         $tapelAktif = Tapel::where('status', 1)->first();
 
+        // Jika tidak ada tapel aktif, kembali dengan pesan error
         if (!$tapelAktif) {
             return view('admin.penugasan.index-error', [
-                'message' => 'Tidak ada Tahun Pelajaran yang aktif. Silakan aktifkan satu terlebih dahulu.'
+                'message' => 'Tidak ada Tahun Pelajaran yang aktif. Silakan aktifkan satu Tahun Pelajaran terlebih dahulu.'
             ]);
         }
 
-        $penugasans = Penugasan::with(['pegawai', 'nomorSurat', 'satuanPendidikan'])
+        // 2. Ambil data penugasan HANYA untuk tapel yang aktif
+        // MODIFIKASI: Menambahkan relasi 'pegawai.satuanPendidikan' untuk fitur otomatisasi
+        $penugasans = Penugasan::with(['pegawai.satuanPendidikan', 'nomorSurat', 'satuanPendidikan'])
                                 ->where('id_tapel', $tapelAktif->id)
                                 ->latest()
                                 ->paginate(10);
 
+        // 3. Ambil data untuk mengisi dropdown di form
+        
+        // --- LOGIKA CERDAS UNTUK NOMOR SURAT ---
+        // Ambil semua nomor surat yang relevan untuk tapel aktif
         $nomorSurats = NomorSurat::where('id_tapel', $tapelAktif->id)->get();
+        // Cek jika hanya ada satu nomor surat, maka kirim sebagai objek tunggal
+        $nomorSuratDefault = ($nomorSurats->count() === 1) ? $nomorSurats->first() : null;
+        // --- LOGIKA CERDAS SELESAI ---
+
+        // Ambil pegawai aktif dan urutkan berdasarkan nama
         $pegawais = Pegawai::where('status', 1)->orderBy('nama', 'asc')->get();
+        // Ambil semua satuan pendidikan
         $satuanPendidikans = SatuanPendidikan::orderBy('nama', 'asc')->get();
 
-        return view('admin.penugasan.index', compact('penugasans', 'tapelAktif', 'nomorSurats', 'pegawais', 'satuanPendidikans'));
+        // 4. Kirim semua data yang diperlukan ke view
+        return view('admin.penugasan.index', compact(
+            'penugasans', 
+            'tapelAktif', 
+            'nomorSurats', 
+            'pegawais', 
+            'satuanPendidikans', 
+            'nomorSuratDefault'
+        ));
     }
 
     /**
@@ -45,8 +67,10 @@ class PenugasanController extends Controller
         $request->validate([
             'id_tapel' => 'required|exists:tapels,id',
             'id_nomor_surat' => 'required|exists:nomor_surats,id',
-            'id_pegawai' => 'required|exists:pegawais,id',
+            'id_pegawai' => 'required|exists:pegawais,id|unique:penugasans,id_pegawai,NULL,id,id_tapel,' . $request->id_tapel,
             'id_satuan_pendidikan' => 'required|exists:satuan_pendidikans,id',
+        ], [
+            'id_pegawai.unique' => 'Pegawai ini sudah memiliki penugasan di tahun pelajaran yang sama.'
         ]);
 
         Penugasan::create($request->all());
@@ -63,8 +87,10 @@ class PenugasanController extends Controller
         $request->validate([
             'id_tapel' => 'required|exists:tapels,id',
             'id_nomor_surat' => 'required|exists:nomor_surats,id',
-            'id_pegawai' => 'required|exists:pegawais,id',
+            'id_pegawai' => ['required', 'exists:pegawais,id', Rule::unique('penugasans')->ignore($penugasan->id)->where('id_tapel', $request->id_tapel)],
             'id_satuan_pendidikan' => 'required|exists:satuan_pendidikans,id',
+        ], [
+            'id_pegawai.unique' => 'Pegawai ini sudah memiliki penugasan di tahun pelajaran yang sama.'
         ]);
 
         $penugasan->update($request->all());
@@ -86,7 +112,6 @@ class PenugasanController extends Controller
     
     /**
      * Menampilkan halaman print untuk penugasan.
-     * (Akan diimplementasikan nanti)
      */
     public function print(Penugasan $penugasan)
     {

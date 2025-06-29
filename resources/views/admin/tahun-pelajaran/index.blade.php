@@ -5,7 +5,7 @@
 @section('content')
 <div class="card-header d-flex justify-content-between align-items-center">
     <span>Data Tapel</span>
-    <a href="{{ route('admin.tahun-pelajaran.create') }}" class="btn btn-primary">
+    <a href="{{ route('admin.tahun-pelajaran.create') }}" class="btn btn-primary mb-2">
         <i class="bi bi-plus-circle me-2"></i>Tambah Tapel
     </a>
 </div>

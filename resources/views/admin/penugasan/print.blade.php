@@ -123,7 +123,7 @@
 
     .tanda-tangan-container {
       width: 100%;
-      margin-top: 15px;
+      margin-top: 6px;
     }
 
     .tanda-tangan {
@@ -178,13 +178,14 @@
   <div class="page">
     <div class="surat-header">
       <p class="judul">Surat Keputusan</p>
-      <p>Ketua Yayasan Nurul Islam Affandiyah</p>
-      <p class="nomor-surat">Nomor : {{ $penugasan->nomorSurat->no_surat }}</p>
+      {{-- <p>Ketua Yayasan Nurul Islam Affandiyah</p> --}}
+      Nomor : {{ $penugasan->nomorSurat->no_surat }}
     </div>
 
     <div class="tentang-block">
       <p>TENTANG :</p>
-      <p>PENGANGKATAN GURU DAN TENAGA KEPENDIDIKAN <br> DI YAYASAN NURUL ISLAM AFFANDIYAH TAHUN PELAJARAN {{ $penugasan->tapel->tapel }}</p>
+      <p>&nbsp;</p>
+      <p>PENGANGKATAN PENDIDIK DAN TENAGA KEPENDIDIKAN <br> DI YAYASAN NURUL ISLAM AFFANDIYAH TAHUN PELAJARAN {{ $penugasan->tapel->tapel }}</p>
     </div>
 
     <p class="pemimpin">KETUA YAYASAN NURUL ISLAM AFFANDIYAH</p>
@@ -245,7 +246,7 @@
             <li><span>Nama</span>: <b>{{ $penugasan->pegawai->nama }}</b></li>
             <li><span>Tempat, Tanggal Lahir</span>: {{ $penugasan->pegawai->tmp_lahir }}, {{ $penugasan->pegawai->tgl_lahir->isoFormat('D MMMM Y') }}</li>
             <li><span>Jenjang/Pend. Terakhir</span>: {{ $penugasan->pegawai->jenjang_pendidikan }}</li>
-            <li><span>Jabatan/Unit Kerja</span>: {{ $penugasan->pegawai->jabatan }} di {{ $penugasan->satuanPendidikan->nama }}</li>
+            <li><span>Jabatan/Unit Kerja</span>: {{ $penugasan->pegawai->status_kepegawaian }}/di {{ $penugasan->satuanPendidikan->nama }}</li>
           </ul>
         </td>
       </tr>
@@ -264,11 +265,11 @@
     <div class="tanda-tangan-container clearfix">
       <div class="tanda-tangan">
         Ditetapkan di: Cianjur<br>
-        Pada Tanggal: {{ $penugasan->nomorSurat->tmt->isoFormat('D MMMM Y') }}
-        <p style="margin-top: 10px;">Ketua Yayasan,</p>
-        <div style="height: 40px;"></div>
-        <p style="font-weight: bold;">
-          <u>{{ $penugasan->nomorSurat->nama_pimpinan }}</u><br>
+        <u>Pada Tanggal: {{ $penugasan->nomorSurat->tmt->isoFormat('D MMMM Y') }}</u>
+        <p style="margin-top: 0px;">Ketua Yayasan,</p>
+        <div style="height: 50px;"></div>
+        <p>
+          <u style="font-weight: bold;">{{ $penugasan->nomorSurat->nama_pimpinan }}</u><br>
           <span>NIPY. -</span>
         </p>
       </div>

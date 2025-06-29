@@ -16,8 +16,10 @@ use App\Http\Controllers\Admin\PenugasanController;
 |--------------------------------------------------------------------------
 */
 
+// === PERUBAHAN UTAMA ADA DI SINI ===
+// Mengalihkan rute utama ('/') ke halaman login.
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 
@@ -29,8 +31,6 @@ Route::get('login', function () {
 Route::post('login', [AuthenticatedSessionController::class, 'store'])
                 ->middleware('guest');
 
-// === PERBAIKAN DI SINI ===
-// Ganti middleware 'auth' menjadi 'auth:admins' agar konsisten
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->middleware('auth:admins') 
                 ->name('logout');
@@ -40,15 +40,28 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::prefix('admin')->name('admin.')->group(function() {
     Route::middleware('auth:admins')->group(function() {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
         Route::get('/profil-lembaga', [ProfilLembagaController::class, 'edit'])->name('profil-lembaga.edit');
         Route::post('/profil-lembaga', [ProfilLembagaController::class, 'update'])->name('profil-lembaga.update');
+        
         Route::resource('satuan-pendidikan', SatuanPendidikanController::class);
-        Route::get('pegawai/keluar', [PegawaiController::class, 'pegawaiKeluar'])->name('pegawai.keluar');
-        Route::get('pegawai/{pegawai}/print', [PegawaiController::class, 'print'])->name('pegawai.print');
-        Route::resource('pegawai', PegawaiController::class);
+        
+        Route::get('pegawai/keluar', [PegawaiController::class, 'pegawaiKeluar'])->name('pegawai.keluar.index');
+Route::get('pegawai/pendidik', [PegawaiController::class, 'pendidik'])->name('pegawai.pendidik');
+Route::get('pegawai/tenaga-kependidikan', [PegawaiController::class, 'tenagaKependidikan'])->name('pegawai.tenaga-kependidikan');
+Route::get('pegawai/{pegawai}/print', [PegawaiController::class, 'print'])->name('pegawai.print');
+Route::resource('pegawai', PegawaiController::class);
+Route::get('pegawai/{pegawai}/form-keluar', [PegawaiController::class, 'formKeluar'])
+    ->whereNumber('pegawai') // Biar lebih eksplisit
+    ->name('pegawai.formKeluar');
+
+Route::post('pegawai/{pegawai}/keluar', [PegawaiController::class, 'keluar'])->name('pegawai.keluar.store');
+        
         Route::patch('tahun-pelajaran/{tapel}/set-active', [TahunPelajaranController::class, 'setActive'])->name('tahun-pelajaran.set-active');
         Route::resource('tahun-pelajaran', TahunPelajaranController::class);
+        
         Route::resource('nomor-surat', NomorSuratController::class);
+        
         Route::get('penugasan/{penugasan}/print', [PenugasanController::class, 'print'])->name('penugasan.print');
         Route::resource('penugasan', PenugasanController::class);
     });

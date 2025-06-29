@@ -2,24 +2,40 @@
 @extends('layouts.admin')
 
 {{-- Mengisi 'title' di Master Layout --}}
-@section('title', 'Data Pegawai Aktif')
+@php
+switch (Route::currentRouteName()) {
+    case 'admin.pegawai.pendidik':
+        $judul = 'Daftar Pendidik';
+        break;
+    case 'admin.pegawai.tenaga-kependidikan':
+        $judul = 'Daftar Tenaga Kependidikan';
+        break;
+    case 'admin.pegawai.keluar':
+        $judul = 'Daftar PTK Keluar';
+        break;
+    default:
+        $judul = 'Data Pegawai Aktif';
+}
+@endphp
+@section('title', $judul)
 
 {{-- Semua konten halaman ini sekarang berada di dalam section 'content' --}}
 @section('content')
 <div class="card-header d-flex justify-content-between align-items-center">
-    <span>Data Pegawai Aktif</span>
+
+    <span>{{ $judul }}</span>
     <div>
-        <a href="#" class="btn btn-info">
+        <a href="#" class="btn btn-info mb-2">
             <i class="bi bi-printer me-2"></i>Cetak Laporan
         </a>
-        <a href="{{ route('admin.pegawai.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-2"></i>Tambah Pegawai
+        <a href="{{ route('admin.pegawai.create') }}" class="btn btn-primary mb-2">
+            <i class="bi bi-plus-circle me-2"></i>Tambah
         </a>
     </div>
 </div>
 <div class="card-body">
     <div class="table-responsive">
-        <table class="table table-striped table-hover">
+        <table id="dt" class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th>#</th>
@@ -44,7 +60,12 @@
                     <td>{{ $pegawai->nuptk ?? '-' }}</td>
                     <td>{{ $pegawai->nipy ?? '-' }}</td>
                     <td>{{ $pegawai->jk == 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
-                    <td><span class="badge bg-success">Aktif</span></td>
+                    <td>
+    <a href="{{ route('admin.pegawai.formKeluar', $pegawai->id) }}" class="badge bg-success text-decoration-none">
+        Aktif
+    </a>
+</td>
+
                     <td>
                         <div class="d-flex gap-2">
                             <a href="{{ route('admin.pegawai.show', $pegawai->id) }}" class="btn btn-sm btn-info" title="Lihat Detail">
@@ -53,9 +74,9 @@
                             <a href="{{ route('admin.pegawai.edit', $pegawai->id) }}" class="btn btn-sm btn-warning" title="Edit">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <button type="button" class="btn btn-sm btn-danger" title="Hapus">
+                            {{-- <button type="button" class="btn btn-sm btn-danger" title="Hapus">
                                 <i class="bi bi-trash3"></i>
-                            </button>
+                            </button> --}}
                         </div>
                     </td>
                 </tr>

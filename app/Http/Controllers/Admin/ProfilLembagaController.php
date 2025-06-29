@@ -30,6 +30,8 @@ class ProfilLembagaController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'npyn' => 'required|string|max:16',
+            'inisial_apk' => 'required|string|max:255',
+            'inisial_lembaga' => 'required|string|max:255',
             'thn_berdiri' => 'nullable|date',
             'luas' => 'required|string|max:15',
             'moto' => 'nullable|string',

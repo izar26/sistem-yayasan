@@ -5,7 +5,7 @@
 @section('content')
 <div class="card-header d-flex justify-content-between align-items-center">
     <span>Tambah Data Pegawai</span>
-    <a href="{{ route('admin.pegawai.index') }}" class="btn btn-success">
+    <a href="{{ route('admin.pegawai.index') }}" class="btn btn-success mb-2">
         <i class="bi bi-arrow-left-circle me-2"></i>Kembali
     </a>
 </div>
@@ -26,38 +26,46 @@
         @csrf
         
         {{-- BAGIAN 1: IDENTITAS UTAMA --}}
-        <div class="row mb-4 align-items-center">
+        <div class="row mb-12 align-items-center">
+            <div class="col-md-4"></div>
             <div class="col-md-3 text-center">
                 <label class="form-label">Foto Pegawai</label>
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-3 text-center">
                 <img src="https://placehold.co/200x200/696cff/FFFFFF?text=Foto" alt="Foto Preview" class="img-thumbnail rounded-circle mb-2" id="photo-preview" width="180" height="180">
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-3 text-center">
                 <input class="form-control form-control-sm" type="file" id="photo" name="photo" onchange="previewImage()">
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-3 text-center">
                 <div class="form-text">Ukuran maks 1MB.</div>
             </div>
-            <div class="col-md-9">
-                <div class="row">
-                    <div class="col-md-12 mb-3">
+            <div class="col-md-4"></div>
+        </div>
+        <hr>
+        
+        {{-- BAGIAN 2: DATA PRIBADI & KEPENDIDIKAN --}}
+        <h5 class="mb-3">A. Data Pribadi & Kependidikan</h5>
+        <div class="row">
+                    <div class="col-md-6 mb-3">
                         <label for="nama" class="form-label">Nama Lengkap (dengan gelar)</label>
                         <input type="text" class="form-control" id="nama" name="nama" value="{{ old('nama') }}" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="jabatan" class="form-label">Jabatan</label>
-                        <input type="text" class="form-control" id="jabatan" name="jabatan" value="{{ old('jabatan') }}" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="status" class="form-label">Status Pegawai</label>
-                        <select class="form-select" id="status" name="status" required>
-                            <option value="1" @if(old('status', 1) == 1) selected @endif>Aktif</option>
-                            <option value="0" @if(old('status') == 0) selected @endif>Tidak Aktif</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <hr>
+    <label for="status_kepegawaian" class="form-label">Status Kepegawaian</label>
+    <select class="form-select" id="status_kepegawaian" name="status_kepegawaian" required>
+        <option value="">Pilih Status...</option>
+        <option value="Pendidik" {{ old('status_kepegawaian') == 'Pendidik' ? 'selected' : '' }}>Pendidik</option>
+        <option value="Tenaga Kependidikan" {{ old('status_kepegawaian') == 'Tenaga Kependidikan' ? 'selected' : '' }}>Tenaga Kependidikan</option>
+    </select>
+</div>
 
-        {{-- BAGIAN 2: DATA PRIBADI & KEPENDIDIKAN --}}
-        <h5 class="mb-3">A. Data Pribadi & Kependidikan</h5>
-        <div class="row">
              <div class="col-md-6 mb-3">
                 <label for="nik" class="form-label">NIK</label>
                 <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik') }}" required>
@@ -97,15 +105,29 @@
                     <option value="Hindu" @if(old('agama') == 'Hindu') selected @endif>Hindu</option>
                 </select>
             </div>
-             <div class="col-md-12 mb-3">
+             <div class="col-md-6 mb-3">
                 <label for="jenjang_pendidikan" class="form-label">Pendidikan Terakhir</label>
                 <input type="text" class="form-control" id="jenjang_pendidikan" name="jenjang_pendidikan" value="{{ old('jenjang_pendidikan') }}" required>
+            </div>
+             <div class="col-md-6 mb-3">
+                <label for="id_satuan_pendidikan" class="form-label">Satuan Pendidikan</label>
+    <select class="form-select @error('id_satuan_pendidikan') is-invalid @enderror" name="id_satuan_pendidikan" id="id_satuan_pendidikan" required>
+        <option value="">Pilih Satuan Pendidikan...</option>
+        @foreach($satuanPendidikans as $sp)
+            <option value="{{ $sp->id }}" {{ old('id_satuan_pendidikan', $pegawai->id_satuan_pendidikan ?? '') == $sp->id ? 'selected' : '' }}>
+                {{ $sp->nama }}
+            </option>
+        @endforeach
+    </select>
+    @error('id_satuan_pendidikan')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
             </div>
         </div>
         <hr>
 
         {{-- BAGIAN 3: NOMOR INDUK KEPEGAWAIAN --}}
-        <h5 class="mb-3">B. Nomor Induk Kepegawaian</h5>
+        <h5 class="mb-3">B. Data Kepegawaian</h5>
         <div class="row">
              <div class="col-md-6 mb-3">
                 <label for="nuptk" class="form-label">NUPTK</label>
@@ -162,6 +184,15 @@
             <textarea class="form-control" id="alamat" name="alamat" rows="3" required>{{ old('alamat') }}</textarea>
         </div>
         <div class="row">
+            <div class="col-md-12 mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" 
+           value="{{ old('email', $pegawai->email ?? '') }}">
+    @error('email')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
             <div class="col-md-6 mb-3">
                 <label for="desa" class="form-label">Desa</label>
                 <input type="text" class="form-control" id="desa" name="desa" value="{{ old('desa') }}" required>

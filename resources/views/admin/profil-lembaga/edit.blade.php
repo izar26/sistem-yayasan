@@ -52,6 +52,17 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="inisial_lembaga" class="form-label">Inisial Lembaga</label>
+                            <input type="text" class="form-control" id="inisial_lembaga" name="inisial_lembaga" value="{{ old('inisial_lembaga', $profil->inisial_lembaga) }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="inisial_apk" class="form-label">Inisial Aplikasi</label>
+                            <input type="text" class="form-control" id="inisial_apk" name="inisial_apk" value="{{ old('inisial_apk', $profil->inisial_apk) }}" required>
+                        </div>
+                    </div>
+
                     <!-- Baris 2: Tahun Berdiri & Luas -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
